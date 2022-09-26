@@ -27,6 +27,7 @@ CFLAGS += -Wextra
 CFLAGS += -Wchkp 
 CFLAGS += -Werror=implicit-function-declaration 
 CFLAGS += -mno-80387
+CFLAGS += -MMD
 
 ASFLAGS += -O0
 ASFLAGS += -g 
@@ -78,3 +79,5 @@ debug: $(TARGET)
 	qemu-system-i386 -kernel $< -s -S
 serialdebug: $(TARGET)
 	qemu-system-i386 -kernel $(TARGET) -serial telnet:127.0.0.1:4444,server,nowait | telnet 127.0.0.1 4444
+
+-include $(OBJS:%.o=%.d)
