@@ -40,19 +40,18 @@ static const uint16_t VGA_Width = 80, VGA_Height = 25;
 static uint16_t posy, posx, color;
 
 
-void term_setcolor(uint8_t _color);
-void term_getpos(uint16_t x,uint16_t y);
-int term_movtoy(uint8_t y);
-int term_movtox(uint8_t x);
-uint8_t term_gety();
-uint8_t term_getx();
+void con_setcolor(uint8_t _color);
+void con_getpos(uint16_t x,uint16_t y);
+int con_movtoy(uint8_t y);
+int con_movtox(uint8_t x);
+uint8_t con_gety();
+uint8_t con_getx();
 
-void term_movcur(uint16_t x, uint16_t y);
-void term_putentryat(uint8_t color,uint16_t x, uint16_t y, char c);
-void term_scrollup(uint8_t NoRow2Mov);
-void term_putchar(char c);
-void term_puts(const char * s);
-void term_clear();
-void term_init();
+void con_movcur(uint16_t x, uint16_t y);
+void con_putentryat(uint8_t color,uint16_t x, uint16_t y, char c);
+void con_putchar(char c);
+void con_puts(const char * s);
+void con_clear();
+void con_init();
 
 #endif //_INCLUDED_TTY_H_

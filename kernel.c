@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "tty.h"
+#include "console.h"
 #include "descriptor_table.h"
 
 #if defined(__linux__)
@@ -14,7 +14,7 @@
 
 void kernel_main()
 { 
-    term_init();
+    con_init();
     GDT_init();
     IDT_init();
     asm volatile("int $2");
@@ -54,12 +54,5 @@ void kernel_main()
     inb(0x60);
     inb(0x60);
 
-    asm volatile ( "outb %%al, $0x80" : : "a"(0) );
-    while(1)
-    {
-        asm volatile("hlt");
-        term_putchar(inb(0x60));
-        term_putchar(inb(0x60));
-        outb(0x20, 0x20);
-    }
+
 }

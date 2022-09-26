@@ -1,4 +1,5 @@
 #include "descriptor_table.h"
+#include "console.h"
 
 
 
@@ -106,17 +107,19 @@ typedef struct registers
    //uint32_t eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
 } reg_t;
 
+// TODO: remove this log
 void isr_handler( int_no)
 uint32_t int_no;
 {
-	term_puts("interrupt: ");
-	term_putchar(int_no/100+48);
-	term_putchar((int_no%100)/10+48);
-	term_putchar(int_no%10+48);
-	term_putchar('\n');
+	con_puts("interrupt: ");
+	con_putchar(int_no/100+48);
+	con_putchar((int_no%100)/10+48);
+	con_putchar(int_no%10+48);
+	con_putchar('\n');
 }
 
+// TODO: remove this log
 __attribute__((interrupt)) void isr_handler_iret(uint16_t *dummy)
 {
-	term_puts("isr_handler_iret: \n");
+	con_puts("isr_handler_iret: \n");
 }
