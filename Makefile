@@ -72,9 +72,9 @@ $(LIST): $(TARGET)
 	@xxd $< >>$@
 clean:
 	rm -rf $(OBJDIR)/ $(BINDIR)/
-run:
-	qemu-system-i386 -kernel $(TARGET) 
-debug: 
-	qemu-system-i386 -kernel $(TARGET) -s -S
-serialdebug:
-	qemu-system-i386 -kernel bin/myos.bin -serial telnet:127.0.0.1:4444,server,nowait | telnet 127.0.0.1 4444
+run: $(TARGET)
+	qemu-system-i386 -kernel $<
+debug: $(TARGET)
+	qemu-system-i386 -kernel $< -s -S
+serialdebug: $(TARGET)
+	qemu-system-i386 -kernel $(TARGET) -serial telnet:127.0.0.1:4444,server,nowait | telnet 127.0.0.1 4444
