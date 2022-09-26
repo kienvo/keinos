@@ -9,7 +9,7 @@
 #endif
 
 #if !defined(__i386__)
-#error "This tutorial needs to be compiled with a ix86-elf compiler"
+#error "This needs to be compiled with a ix86-elf compiler"
 #endif
 
 void kernel_main()

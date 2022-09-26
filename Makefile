@@ -1,58 +1,80 @@
+CC = i686-elf-gcc
+AS = i686-elf-gcc
+LD = i686-elf-gcc
 
-CC=i686-elf-gcc
+OBJDIR ?= obj
+BINDIR ?= bin
+TARGET = $(BINDIR)/keinix.bin
+LIST   = $(BINDIR)/keinix.s
+MAP   = $(BINDIR)/keinix.map
 
-PROJECTDIR=
-OBJDIR=obj
-_OBJS = boot.o kernel.o io.o tty.o descriptor_table.o interrupt.o\
-load_DT.o
+_OBJS += boot.o 
+_OBJS += kernel.o 
+_OBJS += io.o 
+_OBJS += tty.o 
+_OBJS += descriptor_table.o 
+_OBJS += interrupt.o
+_OBJS += load_DT.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
-BINDIR=bin
 
+CFLAGS += -c 
+CFLAGS += -g 
+CFLAGS += -std=gnu99 
+CFLAGS += -ffreestanding 
+CFLAGS += -O2 
+CFLAGS += -Wall 
+CFLAGS += -Wextra 
+CFLAGS += -Wchkp 
+CFLAGS += -Werror=implicit-function-declaration 
+CFLAGS += -mno-80387
 
-.PHONY: all build run clean rebuild debug
+ASFLAGS += -O0
+ASFLAGS += -g 
+ASFLAGS += -c
+
+LDFLAGS += -ffreestanding 
+LDFLAGS += -O2 
+LDFLAGS += -nostdlib  
+LDFLAGS += -lgcc 
+LDFLAGS += -Xlinker 
+LDFLAGS += -Map=$(MAP)
+LDFLAGS += -T linker.ld 
+
+.PHONY: all run clean rebuild 
 .SUFFIXES: .o .c .S .h
- 
 
-all: $(BINDIR)/myos.bin run
-build: $(BINDIR)/myos.bin
-rebuild: clean $(BINDIR)/myos.bin 
+all: $(TARGET)
+rebuild: clean $(TARGET) 
 
 #.c.o:
 $(OBJDIR)/%.o: %.c
-	@echo
-	@echo
-	@echo "BUILD $< -> $@:"
-	$(CC) -c $< -o $@ -g -std=gnu99 -ffreestanding -O2 -Wall -Wextra -Wchkp -Werror=implicit-function-declaration -mno-80387
+	@echo "BUILD $<"
+	@mkdir -pv $(dir $@)
+	$(CC) $(CFLAGS) $< -o $@ 
 #.S.o:
 $(OBJDIR)/%.o: %.S
-	@echo
-	@echo
-	@echo "BUILD $< -> $@:"
-	$(CC) -c $< -o $@ -O2 -g
-$(BINDIR)/myos.bin: $(OBJS) linker.ld
-	@echo
-	@echo
-	@echo "BUILD $@:" 
-	mkdir -p $(OBJDIR)/
-	mkdir -p $(BINDIR)/
-	$(CC) -T linker.ld -o $@ -ffreestanding -O2 -nostdlib $(OBJS) -lgcc -Xlinker -Map=kernel.map
-	
-	echo '\012\012 /*********************** ELF INFOR ***********************/' >$(BINDIR)/list.s
-	printf '\012' >>$(BINDIR)/list.s
-	readelf $(BINDIR)/myos.bin -a >> $(BINDIR)/list.s
-	objdump -S -d -mi386 $(BINDIR)/myos.bin >>$(BINDIR)/list.s
-	echo '\012\012 /*********************** HEX ***********************/' >>$(BINDIR)/list.s
-	printf '\012' >>$(BINDIR)/list.s
-	xxd $(BINDIR)/myos.bin >>$(BINDIR)/list.s
+	@echo "BUILD $<"
+	@mkdir -pv $(dir $@)
+	$(AS) $(ASFLAGS) $< -o $@
+$(TARGET): $(OBJS) linker.ld
+	@echo "LINKING $@:" 
+	@mkdir -pv $(dir $@)
+	$(LD) $(LDFLAGS) -o $@  $(OBJS)
+	@$(MAKE) --no-print-directory $(LIST)
+
+$(LIST): $(TARGET)
+	@echo '\012\012 /*********************** ELF INFOR ***********************/' >$@
+	@printf '\012' >>$@
+	@readelf $< -a >> $@
+	@objdump -S -d -mi386 $< >>$@
+	@echo '\012\012 /*********************** HEX ***********************/' >>$@
+	@printf '\012' >>$@
+	@xxd $< >>$@
 clean:
-	@echo
-	@echo
-	@echo Clean:
-	rm -f $(OBJDIR)/*.o
-	rm -f myos.bin
+	rm -rf $(OBJDIR)/ $(BINDIR)/
 run:
-	qemu-system-i386 -kernel $(BINDIR)/myos.bin 
+	qemu-system-i386 -kernel $(TARGET) 
 debug: 
-	qemu-system-i386 -kernel $(BINDIR)/myos.bin -s -S
+	qemu-system-i386 -kernel $(TARGET) -s -S
 serialdebug:
 	qemu-system-i386 -kernel bin/myos.bin -serial telnet:127.0.0.1:4444,server,nowait | telnet 127.0.0.1 4444
