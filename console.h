@@ -1,7 +1,7 @@
 #ifndef _INCLUDED_TTY_H_ 
 #define _INCLUDED_TTY_H_ 
 
-#include "stdint.h"
+#include <stdint.h>
 #include "io.h"
 
 enum vga_color

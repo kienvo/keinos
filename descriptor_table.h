@@ -2,7 +2,6 @@
 #define _INCLUDED_DESCRIPTOR_TABLE_H_
 
 #include <stdint.h>
-#include "tty.h"
 
 typedef struct
 {
@@ -50,40 +49,40 @@ void IDT_set_gate(
 	uint8_t flags
 );
 
-extern int isr0();
-extern int isr1();
-extern int isr2();
-extern int isr3();
-extern int isr4();
-extern int isr5();
-extern int isr6();
-extern int isr7();
-extern int isr8();
-extern int isr9();
-extern int isr10();
-extern int isr11();
-extern int isr12();
-extern int isr13();
-extern int isr14();
-extern int isr15();
-extern int isr16();
-extern int isr17();
-extern int isr18();
-extern int isr19();
-extern int isr20();
-extern int isr21();
-extern int isr22();
-extern int isr23();
-extern int isr24();
-extern int isr25();
-extern int isr26();
-extern int isr27();
-extern int isr28();
-extern int isr29();
-extern int isr30();
-extern int isr31();
+int isr0();
+int isr1();
+int isr2();
+int isr3();
+int isr4();
+int isr5();
+int isr6();
+int isr7();
+int isr8();
+int isr9();
+int isr10();
+int isr11();
+int isr12();
+int isr13();
+int isr14();
+int isr15();
+int isr16();
+int isr17();
+int isr18();
+int isr19();
+int isr20();
+int isr21();
+int isr22();
+int isr23();
+int isr24();
+int isr25();
+int isr26();
+int isr27();
+int isr28();
+int isr29();
+int isr30();
+int isr31();
 
-extern void load_gdt(uint32_t *);
-extern void load_idt(uint32_t *);
+void load_gdt(uint32_t *);
+void load_idt(uint32_t *);
 
 #endif

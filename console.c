@@ -1,4 +1,4 @@
-#include "tty.h"
+#include "console.h"
 
 void con_setcolor(uint8_t _color)
 {

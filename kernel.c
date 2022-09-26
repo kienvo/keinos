@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include "io.h"
 #include "console.h"
 #include "descriptor_table.h"
 
