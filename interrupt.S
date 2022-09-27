@@ -5,19 +5,16 @@
 .global isr\a
 isr\a :
 	cli
-	//push 0
+	push 0
 	push  \a
 	jmp isr_common_stub
-	//jmp isr_handler_iret
 .endm
 .macro ISR_errcode a
 .global isr\a
 isr\a :
 	cli
-	pop eax
 	push  \a
-	//jmp isr_common_stub
-	//call isr_handler_iret
+	jmp isr_common_stub
 .endm
 
 ISR_noerrcode 0
@@ -55,18 +52,31 @@ ISR_noerrcode 31
 
 isr_common_stub:
 	
-	pop eax
+	pusha
 
-	push ebp
-	mov  ebp, esp
+	
+	mov ax, ds              // ; Lower 16-bits of eax = ds.
+	push eax 
 
-	push eax
+	mov ax, 0x10  //; load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 	
 	call isr_handler
 
-	mov esp, ebp
-	pop ebp
+	pop eax        //; reload the original data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
+
+	popa
+	add esp, 8
+	
+	sti
 	iret
 
 	
