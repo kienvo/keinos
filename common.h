@@ -47,6 +47,7 @@ IDT_ptr_t IDT_ptr;
 
 void IDT_init();
 void GDT_init();
+void pic_init();
 void isr_handler(reg_t);
 void irq_handler(reg_t);
 void IDT_set_gate(
