@@ -16,11 +16,13 @@
 
 void kernel_main()
 {
-    con_init();
     GDT_init();
     IDT_init();
 	pic_init();
+    
+	con_init();
 	rs_init();
+
 	sti();
 	rs_puts("ABCsdfsdfdfsd", COM1);
     while(1)

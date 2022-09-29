@@ -1,7 +1,6 @@
 #ifndef _INCLUDED_TTY_H_ 
 #define _INCLUDED_TTY_H_ 
 
-#include <stdint.h>
 #include "io.h"
 
 enum vga_color
@@ -24,31 +23,31 @@ enum vga_color
 	VGA_COLOR_WHITE = 15,    
 };
 
-static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
+static inline unsigned char vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
     return fg | bg << 4;
 }
-static inline uint16_t vga_entry(char c, uint8_t color)
+static inline unsigned short vga_entry(char c, unsigned char color)
 {
-    return (uint16_t)c | (uint16_t)color << 8;
+    return (unsigned short)c | (unsigned short)color << 8;
 }
 
 
 #define DEFAULT_COLOR VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK
 //#define DEFAULT_COLOR VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK
-static const uint16_t VGA_Width = 80, VGA_Height = 25;
-static uint16_t posy, posx, color;
+static const unsigned short VGA_Width = 80, VGA_Height = 25;
+static unsigned short posy, posx, color;
 
 
-void con_setcolor(uint8_t _color);
-void con_getpos(uint16_t x,uint16_t y);
-int con_movtoy(uint8_t y);
-int con_movtox(uint8_t x);
-uint8_t con_gety();
-uint8_t con_getx();
+void con_setcolor(unsigned char _color);
+void con_getpos(unsigned short x,unsigned short y);
+int con_movtoy(unsigned char y);
+int con_movtox(unsigned char x);
+unsigned char con_gety();
+unsigned char con_getx();
 
-void con_movcur(uint16_t x, uint16_t y);
-void con_putentryat(uint8_t color,uint16_t x, uint16_t y, char c);
+void con_movcur(unsigned short x, unsigned short y);
+void con_putentryat(unsigned char color,unsigned short x, unsigned short y, char c);
 void con_putchar(char c);
 void con_puts(const char * s);
 void con_clear();
