@@ -1,8 +1,6 @@
 #ifndef _INCLUDED_TTY_H_ 
 #define _INCLUDED_TTY_H_ 
 
-#include "io.h"
-
 enum vga_color
 {	
     VGA_COLOR_BLACK = 0,

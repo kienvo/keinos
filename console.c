@@ -1,4 +1,5 @@
 #include "console.h"
+#include "io.h"
 
 void con_setcolor(unsigned char _color)
 {
