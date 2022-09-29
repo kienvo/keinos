@@ -9,4 +9,6 @@ void rs_init();
 void rs_putchar(char c, int port);
 void rs_puts(char* s, int port);
 
+int tty_write(int channel, char *buf, int n);
+
 #endif /* __TTY_H__ */

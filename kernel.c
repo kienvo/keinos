@@ -25,6 +25,7 @@ void kernel_main()
 
 	sti();
 	rs_puts("ABCsdfsdfdfsd", COM1);
+	tty_write(0, "This text is from \nchannel 0, or COM1", 38);
     while(1)
     {
         __asm__ volatile("hlt");
