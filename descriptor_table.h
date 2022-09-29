@@ -32,7 +32,13 @@ typedef struct
 	uint16_t size; // limit the idt entry
 	uint32_t ptr2entry;
 } __attribute__((packed)) IDT_ptr_t;
-
+typedef struct registers
+{
+   uint32_t ds;                  // Data segment selector
+   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
+   uint32_t int_no, err_code;    // Interrupt number and error code (if applicable)
+   uint32_t eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
+} reg_t;
 
 GDT_t GDT_entry[5];
 GDT_ptr_t GDT_ptr;
@@ -41,7 +47,8 @@ IDT_ptr_t IDT_ptr;
 
 void IDT_init();
 void GDT_init();
-void isr_handler();
+void isr_handler(reg_t);
+void irq_handler(reg_t);
 void IDT_set_gate(
 	uint8_t num,
 	uint32_t base,
@@ -81,6 +88,23 @@ int isr28();
 int isr29();
 int isr30();
 int isr31();
+
+int irq0();
+int irq1();
+int irq2();
+int irq3();
+int irq4();
+int irq5();
+int irq6();
+int irq7();
+int irq8();
+int irq9();
+int irq10();
+int irq11();
+int irq12();
+int irq13();
+int irq14();
+int irq15();
 
 void load_gdt(uint32_t *);
 void load_idt(uint32_t *);

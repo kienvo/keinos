@@ -36,10 +36,10 @@ void con_movcur(uint16_t x, uint16_t y)
     posy = y;
 
     uint16_t pos = y*80+x;
-    outb(0x3d4, 14);
-    outb(0x3d5, (pos>>8)&0x00ff);
-    outb(0x3d4, 15);
-    outb(0x3d5, (pos)&0x00ff);
+    outb(14, 0x3d4);
+    outb((pos>>8)&0x00ff, 0x3d5);
+    outb(15, 0x3d4);
+    outb((pos)&0x00ff, 0x3d5);
 }
 void con_putentryat(uint8_t _color,uint16_t x, uint16_t y, char c)
 {

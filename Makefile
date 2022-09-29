@@ -19,9 +19,9 @@ OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += -c 
 CFLAGS += -g 
-CFLAGS += -std=gnu99 
+CFLAGS += -std=gnu99
 CFLAGS += -ffreestanding 
-CFLAGS += -O2 
+CFLAGS += -O0
 CFLAGS += -Wall 
 CFLAGS += -Wextra 
 CFLAGS += -Wchkp 
@@ -34,7 +34,7 @@ ASFLAGS += -g
 ASFLAGS += -c
 
 LDFLAGS += -ffreestanding 
-LDFLAGS += -O2 
+LDFLAGS += -O0
 LDFLAGS += -nostdlib  
 LDFLAGS += -lgcc 
 LDFLAGS += -Xlinker 
@@ -74,7 +74,7 @@ $(LIST): $(TARGET)
 clean:
 	rm -rf $(OBJDIR)/ $(BINDIR)/
 run: $(TARGET)
-	qemu-system-i386 -kernel $<
+	qemu-system-i386 -kernel $< -monitor stdio
 debug: $(TARGET)
 	qemu-system-i386 -kernel $< -s -S
 serialdebug: $(TARGET)

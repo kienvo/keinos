@@ -99,13 +99,6 @@ void IDT_init()
 
 	load_idt((uint32_t*)&IDT_ptr);
 }
-typedef struct registers
-{
-   uint32_t ds;                  // Data segment selector
-   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-   uint32_t int_no, err_code;    // Interrupt number and error code (if applicable)
-   uint32_t eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
-} reg_t;
 
 // TODO: remove this log
 void isr_handler(reg_t regs)
@@ -120,6 +113,29 @@ void isr_handler(reg_t regs)
 	con_putchar((regs.err_code%100)/10+48);
 	con_putchar(regs.err_code%10+48);
 	con_putchar('\n');
+}
+
+void irq_handler(reg_t regs)
+{
+	con_puts("interrupt request: ");
+	con_putchar(regs.int_no/100+48);
+	con_putchar((regs.int_no%100)/10+48);
+	con_putchar(regs.int_no%10+48);
+
+	con_puts(" errorcode: ");
+	con_putchar(regs.err_code/100+48);
+	con_putchar((regs.err_code%100)/10+48);
+	con_putchar(regs.err_code%10+48);
+	con_puts(" ");
+	con_putchar(inb(0x60));
+	con_putchar('\n');
+
+	if(regs.int_no >= 40) {
+		// Send reset signal to slave.
+		outb(0x20, 0xA0);
+	}
+	// Send reset signal to master and slave.
+	outb(0x20, 0x20);
 }
 
 // TODO: remove this log

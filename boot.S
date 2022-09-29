@@ -22,7 +22,7 @@ stack_top:
 .type _start, @function
 _start:
     mov $stack_top, %esp
-
+	cli
     call kernel_main
 hang:
     cli

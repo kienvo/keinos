@@ -1,4 +1,5 @@
 .intel_syntax noprefix
+.section .text
 .global load_gdt
 load_gdt:
 	mov eax, [esp+4]
@@ -18,5 +19,4 @@ load_gdt:
 load_idt:
 	mov eax, [esp+4]
 	lidt [eax]
-	sti
 	ret

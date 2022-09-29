@@ -1,17 +1,17 @@
 .intel_syntax noprefix
 .section .text
-    .global outb
+    .global _outb
     
     .type outb, @function
-    outb:
+    _outb:
         mov al, [esp + 8]
         mov dx, [esp + 4]
         out dx, al
         ret
     
     .type inb, @function
-    .global inb
-    inb:
+    .global _inb
+    _inb:
         mov dx, [esp + 4]
         in  al,dx
         ret
