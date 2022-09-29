@@ -15,6 +15,7 @@ _OBJS += console.o
 _OBJS += descriptor_table.o 
 _OBJS += interrupt.o
 _OBJS += load_DT.o
+_OBJS += serial.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += -c 
@@ -28,6 +29,7 @@ CFLAGS += -Wchkp
 CFLAGS += -Werror=implicit-function-declaration 
 CFLAGS += -mno-80387
 CFLAGS += -MMD
+CFLAGS += -nostdlib  
 
 ASFLAGS += -O0
 ASFLAGS += -g 
@@ -74,7 +76,7 @@ $(LIST): $(TARGET)
 clean:
 	rm -rf $(OBJDIR)/ $(BINDIR)/
 run: $(TARGET)
-	qemu-system-i386 -kernel $< -monitor stdio
+	qemu-system-i386 -kernel $< -serial stdio
 debug: $(TARGET)
 	qemu-system-i386 -kernel $< -s -S
 serialdebug: $(TARGET)
