@@ -1,6 +1,6 @@
 #include "tty.h"
 #include "io.h"
-#include "descriptor_table.h"
+#include "common.h"
 
 static void init(int port)
 {
@@ -28,7 +28,6 @@ void rs_init()
 	init(COM1);
 	init(COM2);
 	outb(inb(0x21)&0xE7, 0x21); // set mask, 0xE7 (11100111)
-	unsigned char t = inb(0x21);
 }
 
 static int is_transmit_empty(int port)
