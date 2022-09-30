@@ -1,6 +1,7 @@
 #include "common.h"
-#include "console.h"
 #include "io.h"
+#include "printk.h"
+#include "panic.h"
 
 
 
@@ -104,32 +105,15 @@ void IDT_init()
 // TODO: remove this log
 void isr_handler(reg_t regs)
 {
-	con_puts("interrupt: ");
-	con_putchar(regs.int_no/100+48);
-	con_putchar((regs.int_no%100)/10+48);
-	con_putchar(regs.int_no%10+48);
-
-	con_puts(" errorcode: ");
-	con_putchar(regs.err_code/100+48);
-	con_putchar((regs.err_code%100)/10+48);
-	con_putchar(regs.err_code%10+48);
-	con_putchar('\n');
+	panic("Exception: 0x%X, errorcode: 0x%X", regs.int_no, regs.err_code);
 }
 
 void irq_handler(reg_t regs)
 {
-	con_puts("interrupt request: ");
-	con_putchar(regs.int_no/100+48);
-	con_putchar((regs.int_no%100)/10+48);
-	con_putchar(regs.int_no%10+48);
-
-	con_puts(" errorcode: ");
-	con_putchar(regs.err_code/100+48);
-	con_putchar((regs.err_code%100)/10+48);
-	con_putchar(regs.err_code%10+48);
-	con_puts(" ");
-	con_putchar(inb(0x60));
-	con_putchar('\n');
+	printk("irq: 0x%X ", regs.int_no);
+	if(regs.int_no == 33) {
+		printk("key: 0x%X\n", inb(0x60));
+	}
 
 	if(regs.int_no >= 40) {
 		// Send reset signal to slave.
@@ -142,7 +126,7 @@ void irq_handler(reg_t regs)
 // TODO: remove this log
 __attribute__((interrupt)) void isr_handler_iret(uint16_t *dummy)
 {
-	con_puts("isr_handler_iret: \n");
+	printk("isr_handler_iret: \n");
 }
 
 void pic_init()
