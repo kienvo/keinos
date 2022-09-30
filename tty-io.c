@@ -1,11 +1,6 @@
 #include "tty.h"
 #include "console.h"
 
-enum TTY_CHANNELS {
-	TTYS0 = 0, // serial 0
-	TTYS1 = 1, // serial 1
-	TTYC = 2   // console
-};
 
 int tty_write(int channel, char *buf, int n)
 {

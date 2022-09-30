@@ -4,6 +4,12 @@
 #define COM1 0x3F8
 #define COM2 0x2F8
 
+enum TTY_CHANNELS {
+	TTYS0 = 0, // serial 0
+	TTYS1 = 1, // serial 1
+	TTYC = 2   // console
+};
+
 void rs_init();
 
 void rs_putchar(char c, int port);
