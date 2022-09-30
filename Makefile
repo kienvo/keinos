@@ -18,6 +18,7 @@ _OBJS += load_DT.o
 _OBJS += serial.o
 _OBJS += tty-io.o
 _OBJS += printk.o
+_OBJS += panic.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += -c 

@@ -24,6 +24,7 @@ _start:
     mov $stack_top, %esp
 	cli
     call kernel_main
+.global hang
 hang:
     cli
     hlt
