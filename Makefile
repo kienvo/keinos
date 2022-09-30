@@ -17,6 +17,7 @@ _OBJS += interrupt.o
 _OBJS += load_DT.o
 _OBJS += serial.o
 _OBJS += tty-io.o
+_OBJS += printk.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += -c 

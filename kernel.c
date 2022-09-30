@@ -5,6 +5,7 @@
 #include "console.h"
 #include "tty.h"
 #include "common.h"
+#include "printk.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -25,7 +26,8 @@ void kernel_main()
 
 	sti();
 	rs_puts("ABCsdfsdfdfsd", COM1);
-	tty_write(0, "This text is from \nchannel 0, or COM1", 38);
+	tty_write(0, "This text is from \nchannel 0, or COM1\n", 39);
+	printk("This is from prink() %c %d %x %X %s\n", 'a',-1, 0xaa, 0xaf, "string test");
     while(1)
     {
         __asm__ volatile("hlt");
