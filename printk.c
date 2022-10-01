@@ -9,7 +9,7 @@ static int default_tty = TTYS0;
 static int itoa( int value, char *str, int base, int is_upper ) {
 	int i=0;
 	int is_negative = value < 0;
-	char buf[1024];
+	char buf[PRINK_BUFSIZE];
 	const char *upper_digits = "0123456789ABCDEF";
 	const char *lower_digits = "0123456789abcdef";
 	const char *digits = is_upper ? upper_digits : lower_digits;
@@ -37,10 +37,10 @@ static int itoa( int value, char *str, int base, int is_upper ) {
 static int strlen(char *s)
 {
 	int i=0;
-	while (i<1024 && *s++) {
+	while (i<PRINK_BUFSIZE && *s++) {
 		i++;
 	}
-	if (i==1024) return -1;
+	if (i==PRINK_BUFSIZE) return -1;
 	else return i;
 }
 
@@ -48,7 +48,7 @@ static int memcpy ( void * dest, const void * src, int num )
 {
 	// TODO: needs optimize
 	char *d = dest;
-	char *s = src;
+	const char *s = src;
 	int b=0;
 	for(int i=0; i<num; i++) {
 		*d = *s;
@@ -62,7 +62,7 @@ static int memcpy ( void * dest, const void * src, int num )
 int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	char *buf_base = buf;
-	char str[1024];
+	char str[PRINK_BUFSIZE];
 	char c, *s;
 	int  n;
 	while (*fmt) {
@@ -111,14 +111,13 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			fmt++;
 		}
 	}
-	char dummy = 0;
 	*buf = 0;
 	return buf - buf_base; 
 }
 
 int vprintk(const char *fmt, va_list args)
 {
-	char buf[1024];
+	char buf[PRINK_BUFSIZE];
 
 	int len = vsprintf(buf, fmt, args);
 	tty_write(default_tty, buf, len);
@@ -128,7 +127,6 @@ int vprintk(const char *fmt, va_list args)
 
 int printk(const char *fmt, ...)
 {
-	char buf[1024];
 	va_list args;
 
 	va_start(args, fmt);
