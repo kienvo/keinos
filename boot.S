@@ -22,7 +22,15 @@ stack_top:
 .type _start, @function
 _start:
     mov $stack_top, %esp
-	cli
+	/* Reset EFLAGS. */
+	pushl   $0
+	popf
+
+	/* Push the pointer to the Multiboot information structure. */
+	push  	%ebx
+	/* Push the magic value. */
+	push 	%eax
+
     call kernel_main
 .global hang
 hang:
