@@ -8,6 +8,7 @@
 #include "printk.h"
 #include "panic.h"
 #include "multiboot.h"
+#include "string.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -45,7 +46,7 @@ void get_multiboot_info(unsigned int magic, unsigned int multiboot_addr) {
 
   /* Is the command line passed? */
 	if (CHECK_FLAG (mbi->flags, 2))
-		MULTIBOOT_LOG ("cmdline = %s\n", (char *) mbi->cmdline);
+		MULTIBOOT_LOG ("cmdline = '%s'\n", (char *) mbi->cmdline);
 
   /* Are mods_* valid? */
 	if (CHECK_FLAG (mbi->flags, 3)) {
@@ -100,7 +101,7 @@ void get_multiboot_info(unsigned int magic, unsigned int multiboot_addr) {
 			(unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;
 			mmap = (multiboot_memory_map_t *) ((unsigned long) mmap
 									+ mmap->size + sizeof (mmap->size)))
-			printk ("\tsize = 0x%X, base_addr = 0x%X %08x,"
+			printk ("\tsize = 0x%X, base_addr = 0x%X%08x,"
 					" length = 0x%X%08x, type = 0x%X\n",
 					(unsigned) mmap->size,
 					(unsigned) (mmap->addr >> 32),
@@ -108,6 +109,40 @@ void get_multiboot_info(unsigned int magic, unsigned int multiboot_addr) {
 					(unsigned) (mmap->len >> 32),
 					(unsigned) (mmap->len & 0xffffffff),
 					(unsigned) mmap->type);
+	}
+}
+
+static const char *get_cmdline(unsigned int multiboot_addr)
+{
+	multiboot_info_t *mbi = (multiboot_info_t *) multiboot_addr;
+	return (const char*) mbi->cmdline;
+}
+
+static void parse_tty_dev(const char *cmd)
+{
+	if(!strncmp(cmd, "/dev/", 5)) {
+		cmd += 5;
+		if(!strncmp(cmd, "ttyS0", 5)) {
+			set_default_tty(TTYS0);
+		}
+		else if(!strncmp(cmd, "ttyS1", 5)) {
+			set_default_tty(TTYS1);
+		}
+		else if(!strncmp(cmd, "tty1", 4)) {
+			set_default_tty(TTY1);
+		}
+	}
+}
+
+static void parse_options(const char *cmd)
+{
+	while(1) {
+		if(!strncmp(cmd, "console=", 8)) {
+			parse_tty_dev(cmd+8);
+		}
+		const char *next = strchr(cmd, ' ');
+		if(next == NULL) return;
+		cmd = ++next;
 	}
 }
 
@@ -120,6 +155,7 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
 	con_init();
 	rs_init();
 	get_multiboot_info(magic, multiboot_addr);
+	parse_options(get_cmdline(multiboot_addr));
 
 	sti();
 	rs_puts("This text is from RS puts\n", COM1);
