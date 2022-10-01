@@ -12,11 +12,6 @@ static long abs(long n)
  * @return		int number of digits
  */
 static int itoa(int value, char *str, int base, int is_upper, int zero_pading) {
-	if(value == 0) {
-		str[0]='0';
-		str[1]='\0';
-		return 1;
-	}
 	int i=0;
 	int is_negative = (value < 0) && (base<=10); // don't add negative sign to hexa
 	char buf[PRINK_BUFSIZE];
