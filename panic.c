@@ -5,13 +5,13 @@
 void panic(const char *fmt, ...)
 {
 	va_list arg;
-	va_start(arg,fmt);
-
 	printk("\n*************KERNEL PANIC************\n");
-	printk(fmt, arg);
+
+	va_start(arg,fmt);
+	vprintk(fmt, arg);
+	va_end(arg);
+
 	printk("\n");
 
 	__asm__ volatile ("jmp hang");
-
-	va_end(arg);
 }
