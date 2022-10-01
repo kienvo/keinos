@@ -19,12 +19,11 @@ static int itoa(int value, char *str, int base, int is_upper, int zero_pading) {
 	const char *lower_digits = "0123456789abcdef";
 	const char *digits = is_upper ? upper_digits : lower_digits;
 	value = abs(value);
-	while (value)
-	{
+	do {
 		buf[i] = digits[value % base];
 		value /= base;
 		i++;
-	}
+	} while (value);
 	for(;i<zero_pading; i++) buf[i] = '0';
 	
 	// revert buf[] to str[]
