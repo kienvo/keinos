@@ -1,12 +1,17 @@
 #include "console.h"
 #include "io.h"
 
+
+static const unsigned short VGA_Width = 80, VGA_Height = 25;
+static unsigned short posy, posx, color;
+
 void con_setcolor(unsigned char _color)
 {
     color = _color;
 }
 void con_getpos(unsigned short x,unsigned short y)
 {
+	// TODO: implement this
 	return;
 }
 int con_movtoy(unsigned char y)

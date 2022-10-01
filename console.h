@@ -33,9 +33,6 @@ static inline unsigned short vga_entry(char c, unsigned char color)
 
 #define DEFAULT_COLOR VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK
 //#define DEFAULT_COLOR VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK
-static const unsigned short VGA_Width = 80, VGA_Height = 25;
-static unsigned short posy, posx, color;
-
 
 void con_setcolor(unsigned char _color);
 void con_getpos(unsigned short x,unsigned short y);
