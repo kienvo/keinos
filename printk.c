@@ -11,7 +11,7 @@ static long abs(long n)
 /**
  * @return		int number of digits
  */
-static int itoa(int value, char *str, int base, int is_upper ) {
+static int itoa(int value, char *str, int base, int is_upper, int zero_pading) {
 	if(value == 0) {
 		str[0]='0';
 		str[1]='\0';
@@ -30,6 +30,7 @@ static int itoa(int value, char *str, int base, int is_upper ) {
 		value /= base;
 		i++;
 	}
+	for(;i<zero_pading; i++) buf[i] = '0';
 	
 	// revert buf[] to str[]
 	str[0] = '-';
@@ -72,9 +73,9 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 	char *buf_base = buf;
 	char str[PRINK_BUFSIZE];
 	char c, *s;
-	int  n;
+	int  n, zero_padding=0;
 	while (*fmt) {
-		if(*fmt == '%') {
+		if(*fmt == '%' || zero_padding) {
 			switch (*(fmt+1))
 			{
 			case 'c':
@@ -92,22 +93,28 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				buf += len;
 				break;
 			case 'd':
-				n = itoa(va_arg(args, int), str, 10, 0);
+				n = itoa(va_arg(args, int), str, 10, 0, zero_padding);
 				memcpy(buf, str, n);
 				buf += n;
 				break;
 			case 'x':
-				n = itoa(va_arg(args, unsigned int), str, 16, 0);
+				n = itoa(va_arg(args, unsigned int), str, 16, 0, zero_padding);
 				memcpy(buf, str, n);
 				buf += n;
 				break;
 			case 'X':
-				n = itoa(va_arg(args, unsigned int), str, 16, 1);
+				n = itoa(va_arg(args, unsigned int), str, 16, 1, zero_padding);
 				memcpy(buf, str, n);
 				buf += n;
 				break;
+			case '0': // zero alignment
+				if(*(fmt + 2)<'0' && *(fmt + 2)>'9') goto print_fault;
+				zero_padding = *(fmt + 2)-'0';
+				fmt += 2;
+				continue;
 			
 			default:
+				print_fault:
 				*buf = 0;
 				return buf - buf_base; //Something wrong! abort.
 				break;
@@ -118,6 +125,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			buf++;
 			fmt++;
 		}
+		zero_padding = 0;
 	}
 	*buf = 0;
 	return buf - buf_base; 
