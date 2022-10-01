@@ -4,7 +4,8 @@
 
 int tty_write(int channel, char *buf, int n)
 {
-	if(channel > 2 || channel < 0 && n < 0) return -1;
+	char *buf_base = buf;
+	if((channel > 2) || (channel < 0) || (n < 0)) return -1;
 
 	if(channel == 0) {
 		while(n>0) {
@@ -24,4 +25,5 @@ int tty_write(int channel, char *buf, int n)
 			n--;
 		}
 	}
+	return buf-buf_base;
 }
