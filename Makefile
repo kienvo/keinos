@@ -6,7 +6,9 @@ OBJDIR ?= obj
 BINDIR ?= bin
 TARGET = $(BINDIR)/keinix.bin
 LIST   = $(BINDIR)/keinix.s
-MAP   = $(BINDIR)/keinix.map
+MAP    = $(BINDIR)/keinix.map
+
+OPT += -DDEBUG_LEVEL=2
 
 _OBJS += boot.o 
 _OBJS += kernel.o 
@@ -21,6 +23,7 @@ _OBJS += printk.o
 _OBJS += panic.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
+CFLAGS += $(OPT)
 CFLAGS += -c 
 CFLAGS += -g 
 CFLAGS += -std=gnu99
