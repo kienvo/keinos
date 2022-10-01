@@ -21,6 +21,7 @@ _OBJS += serial.o
 _OBJS += tty-io.o
 _OBJS += printk.o
 _OBJS += panic.o
+_OBJS += string.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += $(OPT)
@@ -86,6 +87,6 @@ run: $(TARGET)
 debug: $(TARGET)
 	qemu-system-i386 -kernel $< -s -S
 serialdebug: $(TARGET)
-	qemu-system-i386 -kernel $(TARGET) -serial telnet:127.0.0.1:4444,server,nowait | telnet 127.0.0.1 4444
+	qemu-system-i386 -kernel $(TARGET) -serial telnet:127.0.0.1:4444,server,nowait
 
 -include $(OBJS:%.o=%.d)
