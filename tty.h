@@ -7,7 +7,7 @@
 enum TTY_CHANNELS {
 	TTYS0 = 0, // serial 0
 	TTYS1 = 1, // serial 1
-	TTYC = 2   // console
+	TTY1 = 2   // console
 };
 
 void rs_init();
