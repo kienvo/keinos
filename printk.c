@@ -3,19 +3,27 @@
 
 static int default_tty = TTYS0;
 
+static long abs(long n)
+{
+	return (n<0)?-n:n;
+}
+
 /**
  * @return		int number of digits
  */
-static int itoa( int value, char *str, int base, int is_upper ) {
+static int itoa(int value, char *str, int base, int is_upper ) {
+	if(value == 0) {
+		str[0]='0';
+		str[1]='\0';
+		return 1;
+	}
 	int i=0;
-	int is_negative = value < 0;
+	int is_negative = (value < 0) && (base<=10); // don't add negative sign to hexa
 	char buf[PRINK_BUFSIZE];
 	const char *upper_digits = "0123456789ABCDEF";
 	const char *lower_digits = "0123456789abcdef";
 	const char *digits = is_upper ? upper_digits : lower_digits;
-	if(is_negative) {
-		value = -value;
-	}
+	value = abs(value);
 	while (value)
 	{
 		buf[i] = digits[value % base];
