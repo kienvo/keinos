@@ -1,6 +1,5 @@
 #include "printk.h"
 #include "tty.h"
-#include <stdarg.h>
 
 static int default_tty = TTYS0;
 
@@ -45,55 +44,96 @@ static int strlen(char *s)
 	else return i;
 }
 
-int printk(const char *fmt, ...)
+static int memcpy ( void * dest, const void * src, int num )
 {
-	char buf[1024];
+	// TODO: needs optimize
+	char *d = dest;
+	char *s = src;
+	int b=0;
+	for(int i=0; i<num; i++) {
+		*d = *s;
+		d++;
+		s++;
+		b++;
+	}
+	return b;
+}
+
+int vsprintf(char *buf, const char *fmt, va_list args)
+{
+	char *buf_base = buf;
+	char str[1024];
 	char c, *s;
 	int  n;
-
-	va_list arg;
-	va_start(arg, fmt);
-
 	while (*fmt) {
 		if(*fmt == '%') {
 			switch (*(fmt+1))
 			{
 			case 'c':
-				c = va_arg(arg, int);
-				tty_write(default_tty, &c, 1);
+				c = va_arg(args, int);
+				*buf = c;
+				buf++;
 				break;
 			case 's':
-				s = va_arg(arg, char *);
+				s = va_arg(args, char *);
 				int len = strlen(s);
 				if(len<0) {
 					return -1;
 				}
-				tty_write(default_tty, s, len);
+				memcpy(buf, s, len);
+				buf += len;
 				break;
 			case 'd':
-				n = itoa(va_arg(arg, int), buf, 10, 0);
-				tty_write(default_tty, buf, n);
+				n = itoa(va_arg(args, int), str, 10, 0);
+				memcpy(buf, str, n);
+				buf += n;
 				break;
 			case 'x':
-				n = itoa(va_arg(arg, unsigned int), buf, 16, 0);
-				tty_write(default_tty, buf, n);
+				n = itoa(va_arg(args, unsigned int), str, 16, 0);
+				memcpy(buf, str, n);
+				buf += n;
 				break;
 			case 'X':
-				n = itoa(va_arg(arg, unsigned int), buf, 16, 1);
-				tty_write(default_tty, buf, n);
+				n = itoa(va_arg(args, unsigned int), str, 16, 1);
+				memcpy(buf, str, n);
+				buf += n;
 				break;
 			
 			default:
+				*buf = 0;
+				return buf - buf_base; //Something wrong! abort.
 				break;
 			}
 			fmt += 2;
 		} else {
-			tty_write(default_tty, (char*)fmt, 1);
-			fmt++;		
+			*buf = *fmt;
+			buf++;
+			fmt++;
 		}
 	}
 	char dummy = 0;
-	tty_write(default_tty, &dummy, 1);
-	va_end(arg);
-	return 0;
+	*buf = 0;
+	return buf - buf_base; 
+}
+
+int vprintk(const char *fmt, va_list args)
+{
+	char buf[1024];
+
+	int len = vsprintf(buf, fmt, args);
+	tty_write(default_tty, buf, len);
+
+	return len;
+}
+
+int printk(const char *fmt, ...)
+{
+	char buf[1024];
+	va_list args;
+
+	va_start(args, fmt);
+	int len = vprintk(fmt, args);
+	va_end(args);
+
+	return len;
 }
