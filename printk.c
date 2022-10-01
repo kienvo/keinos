@@ -8,6 +8,11 @@ static long abs(long n)
 	return (n<0)?-n:n;
 }
 
+void set_default_tty(int chan) 
+{
+	default_tty = chan;
+}
+
 /**
  * @return		int number of digits
  */
