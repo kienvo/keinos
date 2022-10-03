@@ -2,7 +2,7 @@
 #include "printk.h"
 #include <stdarg.h>
 
-void panic(const char *fmt, ...)
+void panic(const char *fmt, ...) 
 {
 	va_list arg;
 	printk("\n*************KERNEL PANIC************\n");
@@ -13,5 +13,8 @@ void panic(const char *fmt, ...)
 
 	printk("\n");
 
-	__asm__ volatile ("jmp hang");
+	while(1) {
+		__asm__ volatile ("cli");
+		__asm__ volatile ("hlt");
+	}
 }
