@@ -22,3 +22,11 @@ char *strchr(const char *s, int c)
 	} while (*s++);
 	return (0);
 }
+
+// TODO: need optimized
+void memset ( void * ptr, int value, unsigned int sz )
+{
+	for(unsigned int i=0; i<sz; i++) {
+		*((char*)ptr++) = value;
+	}
+}
