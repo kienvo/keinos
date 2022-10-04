@@ -9,6 +9,7 @@
 #include "panic.h"
 #include "multiboot.h"
 #include "string.h"
+#include "paging.h"
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -36,7 +37,7 @@ void get_multiboot_info(unsigned int magic, unsigned int multiboot_addr) {
 	MULTIBOOT_LOG ("flags = 0x%X\n", (unsigned) mbi->flags);
 
   /* Are mem_* valid? */
-	if (CHECK_FLAG (mbi->flags, 0))
+	if (CHECK_FLAG (mbi->flags, 0)) 
 		MULTIBOOT_LOG ("mem_lower = %dKB, mem_upper = %dKB\n",
             (unsigned) mbi->mem_lower, (unsigned) mbi->mem_upper);
 
@@ -154,14 +155,19 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
     
 	con_init();
 	rs_init();
-	get_multiboot_info(magic, multiboot_addr);
 	parse_options(get_cmdline(multiboot_addr));
+	get_multiboot_info(magic, multiboot_addr);
 
 	sti();
+	paging_init(0x1000000); // 16MiB
 	rs_puts("This text is from RS puts\n", COM1);
 	tty_write(0, "This text is from \nchannel 0, or COM1\n", 39);
 	printk("This is from prink() %c %d 0x%X 0x%04X %s\n", 'a',-1, 0xaa, 0xaf, "string test");
-    while(1)
+	printk("placement_addr = 0x%X\n", &__bss_end);
+
+   uint32_t *ptr = (uint32_t*)0xA0000000;
+   uint32_t do_page_fault = *ptr;
+	while(1)
     {
         __asm__ volatile("hlt");
     }

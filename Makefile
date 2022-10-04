@@ -22,6 +22,7 @@ _OBJS += tty-io.o
 _OBJS += printk.o
 _OBJS += panic.o
 _OBJS += string.o
+_OBJS += paging.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += $(OPT)
