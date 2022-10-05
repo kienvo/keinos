@@ -23,6 +23,7 @@ _OBJS += printk.o
 _OBJS += panic.o
 _OBJS += string.o
 _OBJS += paging.o
+_OBJS += kheap.o
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS))
 
 CFLAGS += $(OPT)
