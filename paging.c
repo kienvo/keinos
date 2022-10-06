@@ -2,7 +2,8 @@
 #include "panic.h"
 #include "string.h"
 
-extern uint32_t placement_addr = (uint32_t)&__bss_end;
+extern uint32_t placement_addr;
+page_directory_t *kernel_directory;
 uint32_t *frames;
 uint32_t nframes;
 
@@ -75,6 +76,34 @@ void do_free_frame(page_t *page) {
 	}
 }
 
+static void pagefault_handler(reg_t regs) {
+	uint32_t faulting_address;
+	__asm__ volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+   // The error code gives us details of what happened.
+   int present   = !(regs.err_code & 0x1); // Page not present
+   int rw = regs.err_code & 0x2;           // Write operation?
+   int us = regs.err_code & 0x4;           // Processor was in user-mode?
+   int reserved = regs.err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
+   int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
+
+	PANIC("PAGE FAULT! \n"
+		"present: %d \n"
+		"read-only: %d \n"
+		"user-mode: %d \n"
+		"reserved: %d \n"
+		"instruction-fetch: %d \n"
+		"at 0x%08X \n"
+		, 
+		present !=0,
+		rw !=0,
+		us !=0,
+		reserved !=0,
+		id !=0,
+		faulting_address
+	);
+}
+
 void paging_init(uint32_t memend) 
 {
 	placement_addr = (uint32_t)&__bss_end; // free memory start at the end of .bss section
@@ -82,19 +111,22 @@ void paging_init(uint32_t memend)
 	frames  = (uint32_t*) kmalloc(INDEX_FROM_BIT(nframes)*sizeof(uint32_t));
 	memset(frames, 0, INDEX_FROM_BIT(nframes)*sizeof(uint32_t));
 
-	page_directory_t *kernel_directory = 
+	kernel_directory = 
 			(page_directory_t*)kmalloc_a(sizeof(page_directory_t));
 	memset(kernel_directory, 0, (sizeof(page_directory_t)));
 
+	
 	uint32_t i=0;
 	while (i<placement_addr)
 	{
 		// prevent write access from user-space
+		// TODO: something is wrong here, is_kernel?
 		alloc_frame(get_page(i, 1, kernel_directory), 0, 0);
 		i += 0x1000;
 	}
 	
-	// IDT_set_gate(14,(uint32_t)isr14,0x08,0x8e);
+	isr_register_handler(14, pagefault_handler);
+	kheap_init();
 	switch_page_directory(kernel_directory);
 }
 

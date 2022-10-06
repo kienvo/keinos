@@ -12,7 +12,7 @@
 // page aligned + physical address
 #define kmalloc_ap(sz, phys) _kmalloc(sz, 1, phys);
 
-#define kmalloc(sz) _kmalloc(sz, 1, NULL);
+#define kmalloc(sz) _kmalloc(sz, 0, NULL);
 
 // TODO: recheck this in linker.ld, waste memory, currently just use this
 extern void __bss_end;
@@ -43,9 +43,11 @@ typedef struct page_directory
 void paging_init(uint32_t memsize);
 void switch_page_directory(page_directory_t *dir);
 page_t *get_page(uint32_t addr, int create_new, page_directory_t *dir);
-void pagefault_handler(reg_t regs);
+void alloc_frame(page_t *page, int is_kernel, int is_writeable);
 
-
+void *alloc(uint32_t sz, int is_align) ;
+void kheap_init();
+void kfree(void *p);
 
 
 uint32_t _kmalloc(uint32_t sz, uint32_t is_align, uint32_t *phys);
