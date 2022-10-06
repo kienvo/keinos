@@ -54,6 +54,9 @@ void IDT_set_gate(
 	IDT_entry[num].flags = flags;
 }
 
+static uint32_t handlers[256][2]; // {is_registered, handler}
+#define IS_REGISTERED(int_no) (handlers[(int_no)][0] != 0)
+
 __attribute__((interrupt)) void isr_handler_iret(uint16_t *dummy);
 void IDT_init()
 {
@@ -100,11 +103,31 @@ void IDT_init()
 	IDT_set_gate(31,(uint32_t)isr31,0x08,0x8e);
 
 	load_idt((uint32_t*)&IDT_ptr);
+
+	// TODO: turn this to meaning macro instead of numbers
+	for(int i=0; i<256; i++) {
+		handlers[i][0] = 0; // unregistered all vector
+	}
 }
 
-// TODO: remove this log
+void isr_register_handler(int int_no, void *handler) 
+{
+	// TODO: will be replaced by assert(), currently not implemented yet
+	if(int_no >= 256) {
+		PANIC("Interrupt vector number %d, should be < 256!", int_no);
+	}
+	if(IS_REGISTERED(int_no)) {
+		PANIC("Interrupt vector number %d already registered!", int_no);
+	}
+	handlers[int_no][0] = 1;
+	handlers[int_no][1] = (uint32_t)handler;
+}
+
 void isr_handler(reg_t regs)
 {
+	if(IS_REGISTERED(regs.int_no)) {
+		((void (*)(reg_t))handlers[regs.int_no][1])(regs);
+	}
 	panic("Exception: 0x%X, errorcode: 0x%X", regs.int_no, regs.err_code);
 }
 

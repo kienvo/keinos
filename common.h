@@ -50,6 +50,7 @@ void GDT_init();
 void pic_init();
 void isr_handler(reg_t);
 void irq_handler(reg_t);
+void isr_register_handler(int int_no, void *handler);
 void IDT_set_gate(
 	uint8_t num,
 	uint32_t base,
