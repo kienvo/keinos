@@ -13,7 +13,7 @@
 #include "panic.h"
 
 extern page_directory_t *kernel_directory;
-uint32_t placement_addr = (uint32_t)&__bss_end;
+uint32_t placement_addr;
 heap_t *kheap = NULL;
 
 // Calculate footer pointer from header pointer
@@ -84,12 +84,10 @@ static header_t *find(uint32_t sz, int page_align) {
 				uint32_t offs_left = PAGE_SIZE - offs;
 
 				uint32_t newp = (uint32_t)curr_h + offs_left;
-				uint32_t newh = newp - HSIZE;
-				uint32_t newf = newp + sz;
 
 				uint32_t hole1h = (uint32_t) curr_h;
 				int hole1sz = newp - hole1h - HSIZE;
-				uint32_t hole1f = newh - FSIZE;
+				
 				if(hole1sz < BYTE_ALIGN) {
 					curr_h = NEXT_HEADER(curr_h);
 					continue;
@@ -142,7 +140,7 @@ static void write_chunk(uint32_t addr, uint32_t sz, int is_hole) {
 	((header_t*)addr)->is_hole = is_hole;
 
 	footer_t *f =  CAL_FOOTER(addr);
-	f->header = addr;
+	f->header = (header_t*)addr;
 	f->magic = ALLOC_MAGIC;
 }
 
@@ -162,7 +160,7 @@ static void alloc_new_pages(uint32_t old_placement, uint32_t new_placement)
 #define WRITE_RAW_HOLE(addr, sz) WRITE_HOLE(addr, (sz)-HSIZE-FSIZE)
 
 static void *alloc_new_block(uint32_t sz, int is_align) {
-	void *pret = NULL;
+	uint32_t pret = 0;
 	uint32_t old_placement = placement_addr;
 	if(is_align && (placement_addr & 0xFFFFF000)) {
 		placement_addr &= 0xFFFFF000;
@@ -188,14 +186,14 @@ static void *alloc_new_block(uint32_t sz, int is_align) {
 		WRITE_BLOCK(old_placement, sz);
 		kheap->nchunks++;
 
-		pret = (void*)(old_placement + HSIZE);
+		pret = old_placement + HSIZE;
 	}
 
-	if(!is_pointer_valid(pret)) {
+	if(!is_pointer_valid((void*)pret)) {
 		PANIC("new chunk setup is wrong!");
 	}
 
-	return pret;
+	return (void*)pret;
 }
 
 static void *split(header_t *h, uint32_t newsz) {
@@ -237,7 +235,7 @@ static void *reuse_part_aligned(header_t *h, uint32_t newsz)
 	int hole1sz = newh - hole1h;
 	if(hole1sz >=4 ) {
 		WRITE_RAW_HOLE(hole1h, hole1sz);
-		if(!is_headerp_valid(hole1h)) {
+		if(!is_headerp_valid((header_t*)hole1h)) {
 			PANIC("Something is wrong with hole1 ");
 		}
 		kheap->nchunks++;
@@ -248,9 +246,9 @@ static void *reuse_part_aligned(header_t *h, uint32_t newsz)
 	uint32_t hole2h = newf + FSIZE;
 	int hole2sz = hole2f - hole2h;
 	if(hole2f != newf) {
-		if(hole2sz >= HSIZE+BYTE_ALIGN+FSIZE) {
+		if(hole2sz >= (int)(HSIZE+BYTE_ALIGN+FSIZE)) {
 			WRITE_RAW_HOLE(hole2h, hole2sz);
-			if(!is_headerp_valid(hole2h)) {
+			if(!is_headerp_valid((header_t*)hole2h)) {
 				PANIC("Something is wrong with hole2 ");
 			}
 			kheap->nchunks++;
@@ -285,7 +283,7 @@ static void *alloc(uint32_t sz, int is_align)
 	header_t *chunk = find(sz, is_align);
 	if(chunk == NULL) {
 		return alloc_new_block(sz, is_align);
-	} else if (is_align) {
+	} else {
 		return reuse(chunk, sz, is_align);
 	}
 }
@@ -340,7 +338,7 @@ void kfree(void *p) {
 
 void kheap_init()
 {
-	kheap = kmalloc(sizeof(heap_t));
+	kheap = (heap_t*)kmalloc(sizeof(heap_t));
 	alloc_frame(get_page((uint32_t)kheap, 1, kernel_directory), 0, 0);
 	kheap->heap_base = (void*)placement_addr;
 	kheap->nchunks = 0;

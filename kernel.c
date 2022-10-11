@@ -52,7 +52,7 @@ void get_multiboot_info(unsigned int magic, unsigned int multiboot_addr) {
   /* Are mods_* valid? */
 	if (CHECK_FLAG (mbi->flags, 3)) {
 		multiboot_module_t *mod;
-		int i;
+		uint32_t i;
 		
 		MULTIBOOT_LOG ("mods_count = %d, mods_addr = 0x%X\n",
 				(int) mbi->mods_count, (int) mbi->mods_addr);
@@ -163,7 +163,6 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
 	rs_puts("This text is from RS puts\n", COM1);
 	tty_write(0, "This text is from \nchannel 0, or COM1\n", 39);
 	printk("This is from prink() %c %d 0x%X 0x%04X %s\n", 'a',-1, 0xaa, 0xaf, "string test");
-	printk("placement_addr = 0x%X\n", &__bss_end);
 
 //    uint32_t *ptr = (uint32_t*)0xA0000000;
 //    uint32_t do_page_fault = *ptr;
@@ -180,6 +179,7 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
 	kfree((void*)block);
 	uint32_t block2 = kmalloc_a(0x1000*2); // block2 should = block
 	kfree((void*)block2);
+	uint32_t g = kmalloc(4);  // e should reuse, not new allocated
 	uint32_t block3 = kmalloc(0x1000*2); // block3 should < block2
 	while(1)
     {
