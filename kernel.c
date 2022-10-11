@@ -165,8 +165,22 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
 	printk("This is from prink() %c %d 0x%X 0x%04X %s\n", 'a',-1, 0xaa, 0xaf, "string test");
 	printk("placement_addr = 0x%X\n", &__bss_end);
 
-   uint32_t *ptr = (uint32_t*)0xA0000000;
-   uint32_t do_page_fault = *ptr;
+//    uint32_t *ptr = (uint32_t*)0xA0000000;
+//    uint32_t do_page_fault = *ptr;
+	uint32_t a = kmalloc(8);
+	uint32_t b = kmalloc(8);
+	uint32_t c = kmalloc(8);
+	kfree((void*)a);
+	uint32_t d = kmalloc(8); // d should = a
+	kfree((void*)b);
+	kfree((void*)c);
+	uint32_t f = kmalloc(12); // f should = b
+	uint32_t e = kmalloc(4);  // e should reuse, not new allocated
+	uint32_t block = kmalloc_a(0x1000*2); // block should aligned
+	kfree((void*)block);
+	uint32_t block2 = kmalloc_a(0x1000*2); // block2 should = block
+	kfree((void*)block2);
+	uint32_t block3 = kmalloc(0x1000*2); // block3 should < block2
 	while(1)
     {
         __asm__ volatile("hlt");

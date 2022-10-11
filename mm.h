@@ -5,6 +5,33 @@
 #include <stddef.h>
 #include "common.h"
 
+#include <stdint.h>
+
+#define ALLOC_MAGIC ((uint32_t)0x12345678)
+
+typedef struct 
+{
+	uint32_t magic;
+	uint32_t is_hole;
+	uint32_t sz;
+} header_t;
+
+typedef struct 
+{
+	uint32_t magic;
+	header_t *header;
+} footer_t;
+
+typedef struct {
+	footer_t prev_footer;
+	header_t curr_header;
+} contiguous_seg_t;
+
+typedef struct {
+	void *heap_base;
+	uint32_t nchunks;
+} heap_t;
+
 // page aligned
 #define kmalloc_a(sz) _kmalloc(sz, 1, NULL); 
 // return physical address
@@ -45,8 +72,8 @@ void switch_page_directory(page_directory_t *dir);
 page_t *get_page(uint32_t addr, int create_new, page_directory_t *dir);
 void alloc_frame(page_t *page, int is_kernel, int is_writeable);
 
-void *alloc(uint32_t sz, int is_align) ;
 void kheap_init();
+uint32_t get_phys(uint32_t addr, page_directory_t *dir);
 void kfree(void *p);
 
 
