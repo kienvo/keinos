@@ -9,6 +9,7 @@ LIST   = $(BINDIR)/keinix.s
 MAP    = $(BINDIR)/keinix.map
 
 OPT += -DDEBUG_LEVEL=2
+OPTIMIZE = 0
 
 _OBJS += boot.o 
 _OBJS += kernel.o 
@@ -31,21 +32,20 @@ CFLAGS += -c
 CFLAGS += -g 
 CFLAGS += -std=gnu99
 CFLAGS += -ffreestanding 
-CFLAGS += -O0
+CFLAGS += -O$(OPTIMIZE)
 CFLAGS += -Wall 
 CFLAGS += -Wextra 
-CFLAGS += -Wchkp 
 CFLAGS += -Werror=implicit-function-declaration 
 CFLAGS += -mno-80387
 CFLAGS += -MMD
 CFLAGS += -nostdlib  
 
-ASFLAGS += -O0
+ASFLAGS += -O$(OPTIMIZE)
 ASFLAGS += -g 
 ASFLAGS += -c
 
 LDFLAGS += -ffreestanding 
-LDFLAGS += -O0
+LDFLAGS += -O$(OPTIMIZE)
 LDFLAGS += -nostdlib  
 LDFLAGS += -lgcc 
 LDFLAGS += -Xlinker 
