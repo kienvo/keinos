@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "DEBUG_LEVEL=1"
+            ],
+            "cStandard": "c99",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "gcc-x86",
+            "compilerPath": "/opt/crosstools/bin/i686-elf-gcc",
+            "compilerArgs": [
+                "-c ",
+                "-g ",
+                "-std=gnu99",
+                "-ffreestanding ",
+                "-nostdlib  ",
+                "-O0",
+                "-Wall ",
+                "-Wextra ",
+                "-Wchkp ",
+                "-Werror=implicit-function-declaration ",
+                "-mno-80387",
+                "-MMD"
+            ]
+        }
+    ],
+    "version": 4
+}
