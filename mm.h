@@ -48,7 +48,7 @@ typedef struct page
 {
 	uint32_t present: 1;
 	uint32_t rw     : 1;
-	uint32_t user   : 1;
+	uint32_t user   : 1; //https://wiki.osdev.org/Paging#:~:text=U/S%2C%20the,page%20table%20entry.
 	uint32_t accessed: 1;
 	uint32_t dirty  : 1;
 	uint32_t unused : 7;
@@ -70,7 +70,7 @@ typedef struct page_directory
 void paging_init(uint32_t memsize);
 void switch_page_directory(page_directory_t *dir);
 page_t *get_page(uint32_t addr, int create_new, page_directory_t *dir);
-void alloc_frame(page_t *page, int is_kernel, int is_writeable);
+void alloc_frame(page_t *page, int is_user_page, int is_writeable);
 
 void kheap_init();
 uint32_t get_phys(uint32_t addr, page_directory_t *dir);

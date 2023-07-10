@@ -49,8 +49,14 @@ static uint32_t get_free_frame()
 	}
 	return -1;
 }
-
-void alloc_frame(page_t *page, int is_kernel, int is_writeable) 
+/**
+ * @brief 		Alloc frame for *page
+ * 
+ * @param		page page to allocate
+ * @param		is_user_page  =1 user(all); =0 kernel(only)
+ * @param		is_writeable 
+ */
+void alloc_frame(page_t *page, int is_user_page, int is_writeable) 
 {
 	if (page->frame != 0) {
 		return; // frame was already allocated
@@ -62,7 +68,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
 		set_frame(idx*0x1000);
 		page->present = 1;
 		page->rw      = is_writeable != 0;
-		page->user    = is_kernel    != 0;
+		page->user    = is_user_page    != 0;
 		page->frame   = idx;
 	}
 }
