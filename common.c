@@ -3,7 +3,10 @@
 #include "printk.h"
 #include "panic.h"
 
-
+GDT_t GDT_entry[5];
+GDT_ptr_t GDT_ptr;
+IDT_t IDT_entry[256];
+IDT_ptr_t IDT_ptr;
 
 static void GDT_set_gate
 (

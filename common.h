@@ -40,10 +40,10 @@ typedef struct registers
    uint32_t eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
 } reg_t;
 
-GDT_t GDT_entry[5];
-GDT_ptr_t GDT_ptr;
-IDT_t IDT_entry[256];
-IDT_ptr_t IDT_ptr;
+extern GDT_t GDT_entry[5];
+extern GDT_ptr_t GDT_ptr;
+extern IDT_t IDT_entry[256];
+extern IDT_ptr_t IDT_ptr;
 
 void IDT_init();
 void GDT_init();
