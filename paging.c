@@ -126,7 +126,6 @@ void paging_init(uint32_t memend)
 	while (i<placement_addr)
 	{
 		// prevent write access from user-space
-		// TODO: something is wrong here, is_kernel?
 		alloc_frame(get_page(i, 1, kernel_directory), 0, 0);
 		i += 0x1000;
 	}

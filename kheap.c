@@ -24,6 +24,7 @@ heap_t *kheap = NULL;
 #define BYTE_ALIGN (4)
 #define NEXT_HEADER(h_p) (header_t*)((uint32_t)h_p + HSIZE + (h_p)->sz + FSIZE)
 #define PAGE_SIZE (0x1000)
+#define IS_ALIGNED(addr) (((addr) & 0x00000FFF) != 0)
 
 
 static int is_headerp_valid(header_t *h) {
@@ -162,7 +163,7 @@ static void alloc_new_pages(uint32_t old_placement, uint32_t new_placement)
 static void *alloc_new_block(uint32_t sz, int is_align) {
 	uint32_t pret = 0;
 	uint32_t old_placement = placement_addr;
-	if(is_align && (placement_addr & 0xFFFFF000)) {
+	if(is_align && IS_ALIGNED(placement_addr)) {
 		placement_addr &= 0xFFFFF000;
 		uint32_t nextpage_addr = placement_addr += PAGE_SIZE;
 		placement_addr += PAGE_SIZE*(sz/PAGE_SIZE);
@@ -207,7 +208,7 @@ static void *split(header_t *h, uint32_t newsz) {
 
 	con->curr_header.magic	= ALLOC_MAGIC;
 	con->curr_header.is_hole = 1;
-	con->curr_header.sz = newsz - oldsz;
+	con->curr_header.sz = oldsz - newsz;
 
 	footer_t *nextf = CAL_FOOTER(&con->curr_header);
 	nextf->header = &con->curr_header;
@@ -303,7 +304,8 @@ uint32_t _kmalloc(uint32_t sz, uint32_t is_align, uint32_t *phys)
 		}
 		return (uint32_t) addr;
 	} else {
-		if(is_align && (placement_addr & 0xFFFFF000)) {
+		// https://wiki.osdev.org/James_Molloy%27s_Tutorial_Known_Bugs#Problem:_VFS_Code
+		if(is_align && IS_ALIGNED(placement_addr)) { // If the address is not already page-aligned
 			placement_addr &= 0xFFFFF000;
 			placement_addr += PAGE_SIZE;
 		}

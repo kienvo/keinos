@@ -179,7 +179,8 @@ void kernel_main(unsigned int magic, unsigned int multiboot_addr)
 	kfree((void*)block);
 	uint32_t block2 = kmalloc_a(0x1000*2); // block2 should = block
 	kfree((void*)block2);
-	uint32_t g = kmalloc(4);  // e should reuse, not new allocated
+	uint32_t g = kmalloc(4);  // should reuse, not new allocated
+	uint32_t h = kmalloc(4);  // should reuse, not new allocated
 	uint32_t block3 = kmalloc(0x1000*2); // block3 should < block2
 	while(1)
     {
